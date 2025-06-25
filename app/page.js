@@ -25,7 +25,7 @@ const Home = () => {
     getData();
     getCategory();
   }, []);
-console.log(category)
+
   return (
     <div>
       <div
