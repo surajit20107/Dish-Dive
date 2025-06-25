@@ -19,7 +19,7 @@ const ReceipeId = () => {
   useEffect(() => {
     getData();
   }, []);
-  console.log(data);
+
   return (
     <div>
       <div className="mt-4">
