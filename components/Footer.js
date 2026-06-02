@@ -46,7 +46,7 @@ export default function Footer() {
             <h3 className="font-semibold mb-3 text-slate-200">Connect</h3>
             <div className="flex items-center justify-center md:justify-start gap-4">
               <a
-                href="https://github.com"
+                href="https://github.com/surajit20107"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub"
@@ -55,7 +55,7 @@ export default function Footer() {
                 <FaGithub className="w-5 h-5" />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/surajit-jana20107"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
@@ -64,7 +64,7 @@ export default function Footer() {
                 <FaLinkedin className="w-5 h-5" />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://x.com/surajit_20107"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Twitter / X"
