@@ -14,20 +14,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Dish Dive | Dive into Flavor & Cook with Confidence.",
-  description: "Delicious meals for every occasion. Discover quick recipes, cooking tips, and tasty ideas to make home cooking fun and effortless."
+  title: "DishDive – Explore Recipes from Around the World",
+  description:
+    "Discover thousands of recipes across every cuisine. Search by meal name, browse categories, save your favorites, and cook with confidence.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen bg-gray-50`}
       >
         <Header />
-        <main className="flex-grow">
-          {children}
-        </main>
+        <main className="flex-grow">{children}</main>
         <Footer />
       </body>
     </html>

@@ -1,123 +1,86 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import MealCard from "@/components/MealCard";
+import LoadingSkeleton from "@/components/LoadingSkeleton";
+import { ArrowLeft, SearchX } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
-const ReceipeName = () => {
-  const [data, setData] = useState([]);
+export default function SearchPage() {
   const params = useParams();
-  const getData = async () => {
-    const data = await axios.get(
-      `https://www.themealdb.com/api/json/v1/1/search.php?s=${params.name}`,
-    );
-    setData(data.data.meals[0]);
-  };
+  const router = useRouter();
+  const [meals, setMeals] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const query = decodeURIComponent(params.name);
+
   useEffect(() => {
-    getData();
-  }, []);
+    const fetchResults = async () => {
+      setLoading(true);
+      const res = await axios.get(
+        `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(query)}`
+      );
+      // API returns null when there are no matches
+      setMeals(res.data.meals || []);
+      setLoading(false);
+    };
+    fetchResults();
+  }, [query]);
 
   return (
-    <div>
-      {/* receipe name */}
-      <div className="mt-4">
-        <h1 className="font-bold text-3xl text-center text-zinc-700 leading-10 font-sans tracking-wide">
-          {data?.strMeal}
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Back button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-500 hover:text-orange-500 mb-6 transition-colors text-sm font-medium cursor-pointer"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Go back
+      </button>
+
+      {/* Heading */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Search results for{" "}
+          <span className="text-orange-500">&ldquo;{query}&rdquo;</span>
         </h1>
+        {!loading && (
+          <p className="text-sm text-gray-500 mt-1">
+            {meals.length} {meals.length === 1 ? "result" : "results"} found
+          </p>
+        )}
       </div>
-      {/* receipe image */}
-      <div className="mt-4 flex justify-center items-center rounded-lg bg-white mx-auto max-w-2xl border-grey-300">
-        <img
-          className="w-6/5 h-auto rounded-lg shadow-lg shadow-zinc-300"
-          src={data?.strMealThumb}
-          alt={data.strMeal}
-        />
-      </div>
-      {/* details */}
-      <div className="mt-4 px-4">
-        <p>Category: {data?.strCategory}</p>
-        {data.tags && <p>Tags: {data?.strTags}</p>}
-        <p></p>
-      </div>
-      {/* receipe Ingredient */}
-      <div className="mt-4">
-        <h1 className="mt-4 px-4 font-bold text-2xl">Ingredients</h1>
-        <ul>
-          {Object.keys(data).map((key, index) => {
-            if (key.startsWith("strIngredient") && data[key]) {
-              const number = key.replace("strIngredient", "");
-              const measure = data[`strMeasure${number}`];
-              return (
-                <li key={key} className="px-6 text-sm text-grey-600 mt-1">
-                  {measure?.trim()} {data[key]}
-                </li>
-              );
-            }
-            return null;
-          })}
-        </ul>
-      </div>
-      {/* receipe Instruction */}
-      <div>
-        <h1 className="mt-6 px-4 font-bold text-2xl">Instructions</h1>
-        <div className="px-6 text-sm text-grey-600 mt-1 space-y-2">
-          {data?.strInstructions &&
-            (() => {
-              const hasNumberedSteps = /\d+\.\s/.test(data.strInstructions);
-              if (hasNumberedSteps) {
-                // Handle numbered steps like "1. Do this. 2. Do that."
-                const parts = data.strInstructions
-                  .split(/\s*(\d+\.)\s+/)
-                  .filter(Boolean);
 
-                const steps = [];
-                for (let i = 0; i < parts.length; i += 2) {
-                  steps.push({ number: parts[i], text: parts[i + 1] || "" });
-                }
-
-                return steps.map((step, index) => (
-                  <p key={index}>
-                    <span className="font-semibold text-md text-blue-600">
-                      {step.number}
-                    </span>
-                    <span className="ml-2 text-grey-600 text-md leading-6 font-normal font-sans">
-                      {step.text.trim()}
-                    </span>
-                  </p>
-                ));
-              } else {
-                // Handle plain text by splitting sentences
-                return data.strInstructions
-                  .split(/(?<=[.?!])\s+/)
-                  .filter((sentence) => sentence.trim().length > 0)
-                  .map((step, index) => (
-                    <p key={index}>
-                      <span className="font-semibold text-md text-blue-600">
-                        {index + 1}.
-                      </span>
-                      <span className="ml-2 text-grey-600 text-md leading-6 font-normal font-sans">
-                        {step.trim()}
-                      </span>
-                    </p>
-                  ));
-              }
-            })()}
+      {/* Results */}
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {Array(8)
+            .fill(0)
+            .map((_, i) => (
+              <LoadingSkeleton key={i} />
+            ))}
         </div>
-      </div>
-      {/* receipe video */}
-      <div className="mt-4 px-4">
-        <h1 className="mt-4 px-4 font-bold text-2xl">Video Tutorial</h1>
-        <iframe
-          className="mt-2"
-          src={`https://www.youtube.com/embed/${data?.strYoutube?.split("v=")[1]}`}
-          style={{border: "none"}}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
+      ) : meals.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+          <SearchX className="w-14 h-14 mb-4 text-gray-300" />
+          <p className="text-xl font-semibold text-gray-600">No recipes found</p>
+          <p className="text-sm mt-1">
+            Try a different search term like &ldquo;pasta&rdquo; or &ldquo;chicken&rdquo;.
+          </p>
+          <button
+            onClick={() => router.push("/")}
+            className="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-full font-semibold transition-colors cursor-pointer"
+          >
+            Explore Recipes
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {meals.map((meal) => (
+            <MealCard key={meal.idMeal} meal={meal} />
+          ))}
+        </div>
+      )}
     </div>
   );
-};
-
-export default ReceipeName;
+}
