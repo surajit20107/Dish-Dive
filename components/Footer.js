@@ -73,9 +73,6 @@ export default function Footer() {
                 <FaTwitter className="w-5 h-5" />
               </a>
             </div>
-            <p className="text-slate-500 text-xs mt-3">
-              Update links in components/Footer.js
-            </p>
           </div>
         </div>
 
